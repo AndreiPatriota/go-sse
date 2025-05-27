@@ -1,0 +1,30 @@
+{{ define "layout" }}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script defer src="/assets/scripts/libs/alpine.js"></script>
+    <script src="/assets/scripts/front-js/index.js"></script>
+
+    <link rel="stylesheet" href="/assets/styles/output.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <header
+      class="flex items-center justify-between p-4 bg-gray-800 text-white">
+      <h1 class="text-3xl text-amber-300">My Website</h1>
+      <nav>
+        <ul class="flex space-x-4">
+          <li><a href="/home">Home</a></li>
+          <li><a href="/app">App</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    {{ block "main" . }}
+    <main>The main content goes here</main>
+    {{ end }}
+  </body>
+</html>
+{{ end }}

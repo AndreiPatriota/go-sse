@@ -1,0 +1,10 @@
+{{define "app"}} {{template "layout" . }} {{end}}
+<!--  -->
+{{define "main"}}
+<h2>Welcome to the App Page</h2>
+<div x-data="sseApp">
+  <p>
+    Aqui está o horário retornado via sse: <span x-text="latestTime"></span>
+  </p>
+</div>
+{{end}}
