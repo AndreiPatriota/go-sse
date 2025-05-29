@@ -1,13 +1,15 @@
 document.addEventListener('alpine:init', () => {
   Alpine.data('sseApp', () => ({
-    latestTime: 'Waiting...',
+    temperatura: 0,
+    velocidadeVento: 0,
     init() {
       const evtSource = new EventSource('/sse-stream');
 
       evtSource.onmessage = (event) => {
         const payload = JSON.parse(event.data);
         console.log('Received SSE:', payload);
-        this.latestTime = payload.mensagem;
+        this.temperatura = payload.temperatura || 'No data';
+        this.velocidadeVento = payload.velocidade_vento || 'No data';
       };
 
       evtSource.onerror = (err) => {

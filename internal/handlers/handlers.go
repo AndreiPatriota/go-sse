@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -39,12 +37,6 @@ func GetSseStream(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 
-	flusher, ok := w.(http.Flusher)
-	if !ok {
-		http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
-		return
-	}
-
 	tick := time.NewTicker(5 * time.Second)
 	defer tick.Stop()
 
@@ -55,22 +47,20 @@ func GetSseStream(w http.ResponseWriter, r *http.Request) {
 		case <-notificaFim:
 			log.Println("Client closed connection")
 			return
-		case t := <-tick.C:
-			msg := mensagemSSE{
-				Ok:       true,
-				Mensagem: fmt.Sprintf("Current time is %s", t.Format(time.RFC3339)),
-			}
-			jsonPayload, err := json.Marshal(msg)
+		case <-tick.C:
+
+			itaDados, err := getTempoLocal(latItapetim, logItapetim)
+			if err != nil || itaDados == nil {
+				log.Println("Error getting Itapetim data:", err)
+				continue
+			} 
+			
+			err = sendSSEMessage(w, itaDados)
 			if err != nil {
-				log.Println("Error marshalling JSON:", err)
+				log.Println("Error sending SSE message:", err)
+				http.Error(w, "Error sending SSE message", http.StatusInternalServerError)
 				return
 			}
-			_, err = fmt.Fprintf(w, "data: %s\n\n", jsonPayload)
-			if err != nil {
-				log.Println("Error writing to client:", err)
-				return
-			}
-			flusher.Flush()
 		}
 	}
 }

@@ -16,7 +16,7 @@ func main() {
 		Handler: r,
 	}
 
-	fmt.Printf("Server is running on port %d\n", port)
+	fmt.Printf("Server is running http://localhost:%d\n", port)
 	if err := server.ListenAndServe(); err != nil {
 		fmt.Printf("Error starting server: %v\n", err)
 		return
