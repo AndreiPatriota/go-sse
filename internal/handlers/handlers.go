@@ -49,13 +49,21 @@ func GetSseStream(w http.ResponseWriter, r *http.Request) {
 			return
 		case <-tick.C:
 
+			var mensagem mensagemSSE
 			itaDados, err := getTempoLocal(latItapetim, logItapetim)
 			if err != nil || itaDados == nil {
-				log.Println("Error getting Itapetim data:", err)
-				continue
-			} 
-			
-			err = sendSSEMessage(w, itaDados)
+				mensagem.Ok = false
+				mensagem.Mensagem = "Erro na chamada da API"
+			} else {
+				mensagem.Ok = true
+				mensagem.Mensagem = "Dados atualizados com sucesso"
+				mensagem.Temperatura = itaDados.Current.Temperature2m
+				mensagem.VelVento = itaDados.Current.WindSpeed10m
+				mensagem.UmidadeRelativa = itaDados.Hourly.RelativeHumidity2m[0]
+				mensagem.Hora = itaDados.Current.Time
+			}
+			 
+			err = sendSSEMessage(w, &mensagem)
 			if err != nil {
 				log.Println("Error sending SSE message:", err)
 				http.Error(w, "Error sending SSE message", http.StatusInternalServerError)

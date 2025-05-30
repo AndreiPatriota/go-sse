@@ -8,16 +8,21 @@ import (
 )
 
 
-type mensagemSSE struct {
-	Ok bool `json:"ok"`
-	Mensagem string `json:"mensagem"`
-}
 
 const (
 	endpointDados = "https://api.open-meteo.com/v1/forecast"
 	latItapetim = -7.3778
-	logItapetim = -37.19)
+	logItapetim = -37.19
+)
 
+type mensagemSSE struct {
+	Ok       bool   `json:"ok"`
+	Mensagem string `json:"mensagem"`
+	Temperatura float64 `json:"temperatura"`
+	VelVento float64 `json:"velocidade_vento"`
+	UmidadeRelativa int `json:"umidade_relativa"`
+	Hora string `json:"hora"`
+}
 
 type weatherResponse struct {
 	Latitude             float64         `json:"latitude"`
@@ -55,7 +60,7 @@ type hourlyUnits struct {
 }
 
 type hourly struct {
-	Time               []string  `json:"time"` // could also be []time.Time with custom unmarshal
+	Time               []string  `json:"time"` 
 	Temperature2m      []float64 `json:"temperature_2m"`
 	RelativeHumidity2m []int     `json:"relative_humidity_2m"`
 	WindSpeed10m       []float64 `json:"wind_speed_10m"`
@@ -71,38 +76,33 @@ func getTempoLocal(lat, long float64) (*weatherResponse, error) {
 	resp, err := http.Get(getEndpointDados(lat, long))
 	var dados weatherResponse
 	if err != nil || resp == nil {
-		log.Println("Erro ao fazer requisição para Itapetim:", err)
-		return nil, fmt.Errorf("erro ao fazer requisição para Itapetim: %v", err)
+		log.Println("erro ao fazer requisição para a API:", err)
+		return nil, fmt.Errorf("erro ao fazer requisição para a API: %v", err)
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		log.Println("Erro ao obter dados:", resp.Status)
+		log.Println("erro ao obter dados:", resp.Status)
 		return nil, fmt.Errorf("erro ao obter dados: %s", resp.Status)
 	} 
 	
 	if err := json.NewDecoder(resp.Body).Decode(&dados); err != nil {
-		log.Println("Error decoding response:", err)
-		return nil, fmt.Errorf("error decoding response: %v", err)
+		log.Println("erro ao decodificar a resposta:", err)
+		return nil, fmt.Errorf("erro ao decodificar a resposta: %v", err)
 	}
 
 	return &dados, nil
 }
 
-func sendSSEMessage(w http.ResponseWriter, msg *weatherResponse) error {
+func sendSSEMessage(w http.ResponseWriter, msg *mensagemSSE) error {
 
-	mensagemSSE :=  struct {
-		Ok       bool   `json:"ok"`
-		Temperatura float64 `json:"temperatura"`
-		VelVento float64 `json:"velocidade_vento"`
-	} {
-		Ok:       true,
-		Temperatura: msg.Current.Temperature2m,
-		VelVento: msg.Current.WindSpeed10m,
+	var event []byte = []byte("event: update\n")
+	if !msg.Ok {
+		event = []byte("event: error\n")
 	}
-	
-	jsonPayload, err := json.Marshal(mensagemSSE)
+
+	jsonPayload, err := json.Marshal(msg)
 	if err != nil {
 		log.Println("Error marshalling JSON:", err)
 		return fmt.Errorf("error marshalling JSON: %v", err)
@@ -110,11 +110,11 @@ func sendSSEMessage(w http.ResponseWriter, msg *weatherResponse) error {
 
 	f, ok := w.(http.Flusher)
 	if !ok {
-		log.Println("Streaming unsupported!")
-		return fmt.Errorf("streaming unsupported")
+		log.Println("Streaming não suportado!")
+		return fmt.Errorf("streaming não suportado")
 	} 
-	fmt.Fprintf(w, "data: %s\n\n", jsonPayload)
-		
+	
+	fmt.Fprintf(w, "%sdata: %s\n\n", event, jsonPayload)
 	f.Flush()
 	return nil
 }
