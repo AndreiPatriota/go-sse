@@ -10,7 +10,7 @@ import (
 func InitRouter() *chi.Mux {
 	r := chi.NewRouter()
 
-	r.Handle("/assets/*", http.StripPrefix("/assets/", http.FileServer(http.Dir("web/public"))))
+	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("web/public"))))
 
 	r.Get("/", handlers.GetIndex)
 	r.Get("/home", handlers.GetHome)
