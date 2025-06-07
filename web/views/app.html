@@ -1,11 +1,65 @@
 {{define "app"}} {{template "layout" . }} {{end}}
 <!--  -->
 {{define "main"}}
-<h2>Welcome to the App Page</h2>
-<div x-data="sseApp">
-  <p>Temperatura: <span x-text="temperatura"></span></p>
-  <p>Vento: <span x-text="velocidadeVento"></span></p>
-  <p>Umidade: <span x-text="umidadeRelativa"></span></p>
-  <p>Hora Local: <span x-text="hora"></span></p>
-</div>
+<main id="main">
+  <h2 class="text-3xl mb-28">Welcome to the App Page</h2>
+  <div
+    x-data="sseApp"
+    class="flex justify-center items-center flex-wrap max-w-4xl mx-auto">
+    <div class="card w-3xs h-60 mx-auto bg-red-200">
+      <header class="h-1/3">
+        <h2 class="text-2xl">Temperatura</h2>
+        <p>Temperatura atual no local de escolha</p>
+      </header>
+      <section class="h-1/3">
+        <p class="text-xl"><span x-text="temperatura"></span></p>
+      </section>
+      <footer class="h-1/3">
+        <p class="text-sm"><span x-text="hora"></span></p>
+      </footer>
+    </div>
+
+    <div class="card w-3xs h-60 mx-auto bg-red-200">
+      <header class="h-1/3">
+        <h2 class="text-2xl">Velocidade do vento</h2>
+        <p>Velocidade do vento no local de escolha</p>
+      </header>
+      <section class="h-1/3">
+        <p class="text-xl"><span x-text="velocidadeVento"></span></p>
+      </section>
+      <footer class="h-1/3">
+        <p class="text-sm"><span x-text="hora"></span></p>
+      </footer>
+    </div>
+
+    <div class="card w-3xs h-60 mx-auto bg-red-200">
+      <header class="h-1/3">
+        <h2 class="text-2xl">Umidade relativa</h2>
+        <p>Umidade relativa no local de escolha</p>
+      </header>
+      <section class="h-1/3">
+        <p class="text-xl"><span x-text="umidadeRelativa"></span></p>
+      </section>
+      <footer class="h-1/3">
+        <p class="text-sm"><span x-text="hora"></span></p>
+      </footer>
+    </div>
+    <!-- <p>Vento: <span x-text="velocidadeVento"></span></p>
+    <div class="card w-3xs mx-auto bg-red-400">
+      <header>
+        <h2 class="text-2xl">Temperatura</h2>
+        <p>Temperatura atual no local de escolha</p>
+      </header>
+      <section>
+        <p class="text-xl"><span x-text="temperatura"></span></p>
+      </section>
+      <footer>
+        <p class="text-sm"><span x-text="hora"></span></p>
+      </footer>
+    </div>
+    c
+    <p>Umidade: <span x-text="umidadeRelativa"></span></p>
+    <p>Hora Local: <span x-text="hora"></span></p> -->
+  </div>
+</main>
 {{end}}
