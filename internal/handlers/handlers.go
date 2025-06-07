@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"html/template"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/AndreiPatriota/go-sse/web"
 )
 
 func GetIndex(w http.ResponseWriter, r *http.Request) {
@@ -13,23 +14,25 @@ func GetIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetHome(w http.ResponseWriter, r *http.Request) {
-	templ, err := template.ParseFiles("web/views/_layout.html" ,"web/views/home.html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		return
-	}
+	// templ, err := template.ParseFiles("web/views/_layout.html" ,"web/views/home.html")
+	// if err != nil {
+	// 	http.Error(w, "Error loading template", http.StatusInternalServerError)
+	// 	return
+	// }
 
-	templ.ExecuteTemplate(w, "home", nil)
+	// templ.ExecuteTemplate(w, "home", nil)
+	web.RenderPager(w, "views/home.html", nil)
 }
 
 func GetApp(w http.ResponseWriter, r *http.Request) {
-	templ, err := template.ParseFiles("web/views/_layout.html" ,"web/views/app.html")
-	if err != nil {
-		http.Error(w, "Error loading template", http.StatusInternalServerError)
-		return
-	}
+	// templ, err := template.ParseFiles("web/views/_layout.html" ,"web/views/app.html")
+	// if err != nil {
+	// 	http.Error(w, "Error loading template", http.StatusInternalServerError)
+	// 	return
+	// }
 
-	templ.ExecuteTemplate(w, "app", nil)
+	// templ.ExecuteTemplate(w, "app", nil)
+	web.RenderPager(w, "views/app.html", nil)
 }
 
 func GetSseStream(w http.ResponseWriter, r *http.Request) {

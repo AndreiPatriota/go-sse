@@ -67,7 +67,6 @@ type hourly struct {
 }
 
 
-
 func getEndpointDados(lat, long float64) string {
 	return endpointDados + fmt.Sprintf("?latitude=%f&longitude=%f&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m", lat, long)
 }
